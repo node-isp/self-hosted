@@ -13,6 +13,9 @@ with Docker installed.
 3. Install git
 4. Clone this repository
 5. Run the deployment script
+6. Login to deo ker registry
+7. Start services
+8. Load web interface, and complete installation wizard
 
 ```bash
 apt update && apt upgrade -y
@@ -52,9 +55,15 @@ cd nodeisp
 ./setup.sh
 
 # Edit the .env file and configure email settings, and other services
-
-# Generate a Google Maps key here: https://developers.google.com/maps/gmp-get-started, tied to your domain.
+# Note: You can generate a Google Maps key here: https://developers.google.com/maps/gmp-get-started, tied to your
+#   domain.this is required for address searches and doesnt cost anything. Make sure its scoped for web, and only
+#   from your domain!
 vim .env
+
+# Login to the container registery
+#   Username is licence key
+#   Password is licence code, prefixed with a "P", eg Pnodeisp_1234
+docker login cr.theitdept.au
 
 # Start the services
 docker compose up -d
