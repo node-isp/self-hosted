@@ -1,0 +1,166 @@
+version: "3.9"
+
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+    restart: unless-stopped
+
+  licence_client:
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:licence_client-v0.8.3
+    container_name: nodeisp-licence-client
+    restart: unless-stopped
+    environment:
+      APP_VERSION: v0.8.3
+      LICENCE_KEY_ID: ${NODEISP_LICENCE_KEY_ID}
+      LICENCE_KEY_CODE: ${NODEISP_LICENCE_KEY_CODE}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: nodeisp
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+
+    volumes:
+      - app_config:/etc/nodeisp/
+
+  app:
+    labels:
+      caddy: ${NODEISP_DOMAIN}
+      caddy.reverse_proxy: "app:8080"
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.8.3
+    depends_on:
+      - licence_client
+      - postgres
+      - redis
+      - pdf
+    container_name: nodeisp-web
+    restart: unless-stopped
+    environment:
+      APP_VERSION: v0.8.3
+      DB_DATABASE: nodeisp
+      DB_USERNAME: postgres
+      REDIS_PORT: "6379"
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      DB_PORT: "5432"
+      CACHE_DRIVER: file
+      QUEUE_CONNECTION: redis
+      TELESCOPE_PATH: admin-services/telescope
+      HORIZON_PATH: admin-services/horizon
+      DB_CONNECTION: pgsql
+      FILESYSTEM_DISK: local
+      SERVICES_GOTENBERG_URL: http://pdf:3000/
+    env_file:
+      - .env
+    volumes:
+      - app_data:/app/storage/app/public
+      - app_data:/app/public/storage
+      - app_config:/etc/nodeisp/
+
+  horizon:
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.8.3
+    depends_on:
+      - app
+      - licence_client
+      - postgres
+      - redis
+      - pdf
+    container_name: nodeisp-horizon
+    restart: unless-stopped
+    entrypoint:
+      - /entrypoint-worker.sh
+    environment:
+      APP_VERSION: v0.8.3
+      DB_DATABASE: nodeisp
+      DB_USERNAME: postgres
+      REDIS_PORT: "6379"
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      DB_PORT: "5432"
+      CACHE_DRIVER: file
+      QUEUE_CONNECTION: redis
+      TELESCOPE_PATH: admin-services/telescope
+      HORIZON_PATH: admin-services/horizon
+      DB_CONNECTION: pgsql
+      FILESYSTEM_DISK: local
+      SERVICES_GOTENBERG_URL: http://pdf:3000/
+    env_file:
+      - .env
+    volumes:
+      - app_data:/app/storage/app/public
+      - app_data:/app/public/storage
+      - app_config:/etc/nodeisp/
+
+  cron:
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.8.3
+    depends_on:
+      - app
+      - licence_client
+      - postgres
+      - redis
+      - pdf
+    container_name: nodeisp-cron
+    restart: unless-stopped
+    entrypoint:
+      - /entrypoint-cron.sh
+    environment:
+      APP_VERSION: v0.8.3
+      DB_DATABASE: nodeisp
+      DB_USERNAME: postgres
+      REDIS_PORT: "6379"
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      DB_PORT: "5432"
+      CACHE_DRIVER: file
+      QUEUE_CONNECTION: redis
+      TELESCOPE_PATH: admin-services/telescope
+      HORIZON_PATH: admin-services/horizon
+      DB_CONNECTION: pgsql
+      FILESYSTEM_DISK: local
+      SERVICES_GOTENBERG_URL: http://pdf:3000/
+    env_file:
+      - .env
+    volumes:
+      - app_data:/app/storage/app/public
+      - app_data:/app/public/storage
+      - app_config:/etc/nodeisp/
+
+  postgres:
+    image: postgres:16
+    container_name: nodeisp-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: nodeisp
+
+  redis:
+    image: redis:7
+    container_name: nodeisp-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD:
+      REDIS_PORT: "6379"
+
+    volumes:
+      - redis_data:/data
+
+  pdf:
+    image: getlago/lago-gotenberg:7
+    container_name: nodeisp-pdf
+    restart: unless-stopped
+
+volumes:
+  app_data:
+  app_config:
+  caddy_data:
+  postgres_data:
+  redis_data:
