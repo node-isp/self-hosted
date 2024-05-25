@@ -43,6 +43,8 @@ echo "MAIL_ENCRYPTION=tls" >> .env
 echo "MAIL_FROM_ADDRESS=" >> .env
 echo "MAIL_FROM_NAME=\"$company_name\"" >> .env
 
+echo "SERVICES_GOOGLE_MAPS_API_KEY=" >> .env
+
 echo
 echo
 

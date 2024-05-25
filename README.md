@@ -51,6 +51,11 @@ git clone https://github.com/The-IT-Dept/node-isp-deploy.git nodeisp
 cd nodeisp
 ./setup.sh
 
+# Edit the .env file and configure email settings, and other services
+
+# Generate a Google Maps key here: https://developers.google.com/maps/gmp-get-started, tied to your domain.
+vim .env
+
 # Start the services
 docker compose up -d
 
