@@ -16,7 +16,7 @@ services:
     container_name: nodeisp-licence-client
     restart: unless-stopped
     environment:
-      APP_VERSION: v0.9.7
+      APP_VERSION: 
       LICENCE_KEY_ID: ${NODEISP_LICENCE_KEY_ID}
       LICENCE_KEY_CODE: ${NODEISP_LICENCE_KEY_CODE}
       DB_HOST: postgres
@@ -41,7 +41,7 @@ services:
     container_name: nodeisp-web
     restart: unless-stopped
     environment:
-      APP_VERSION: v0.9.7
+      APP_VERSION: 
       DB_DATABASE: nodeisp
       DB_USERNAME: postgres
       REDIS_PORT: "6379"
@@ -75,7 +75,7 @@ services:
     entrypoint:
       - /entrypoint-worker.sh
     environment:
-      APP_VERSION: v0.9.7
+      APP_VERSION: 
       DB_DATABASE: nodeisp
       DB_USERNAME: postgres
       REDIS_PORT: "6379"
@@ -109,7 +109,7 @@ services:
     entrypoint:
       - /entrypoint-cron.sh
     environment:
-      APP_VERSION: v0.9.7
+      APP_VERSION: 
       DB_DATABASE: nodeisp
       DB_USERNAME: postgres
       REDIS_PORT: "6379"
