@@ -12,11 +12,11 @@ services:
     restart: unless-stopped
 
   licence_client:
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:licence_client-v0.9.6
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:licence_client-v0.9.7
     container_name: nodeisp-licence-client
     restart: unless-stopped
     environment:
-      APP_VERSION: v0.9.6
+      APP_VERSION: v0.9.7
       LICENCE_KEY_ID: ${NODEISP_LICENCE_KEY_ID}
       LICENCE_KEY_CODE: ${NODEISP_LICENCE_KEY_CODE}
       DB_HOST: postgres
@@ -32,7 +32,7 @@ services:
     labels:
       caddy: ${NODEISP_DOMAIN}
       caddy.reverse_proxy: "app:8080"
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.6
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.7
     depends_on:
       - licence_client
       - postgres
@@ -41,7 +41,7 @@ services:
     container_name: nodeisp-web
     restart: unless-stopped
     environment:
-      APP_VERSION: v0.9.6
+      APP_VERSION: v0.9.7
       DB_DATABASE: nodeisp
       DB_USERNAME: postgres
       REDIS_PORT: "6379"
@@ -63,7 +63,7 @@ services:
       - app_config:/etc/nodeisp/
 
   horizon:
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.6
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.7
     depends_on:
       - app
       - licence_client
@@ -75,7 +75,7 @@ services:
     entrypoint:
       - /entrypoint-worker.sh
     environment:
-      APP_VERSION: v0.9.6
+      APP_VERSION: v0.9.7
       DB_DATABASE: nodeisp
       DB_USERNAME: postgres
       REDIS_PORT: "6379"
@@ -97,7 +97,7 @@ services:
       - app_config:/etc/nodeisp/
 
   cron:
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.6
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.7
     depends_on:
       - app
       - licence_client
@@ -109,7 +109,7 @@ services:
     entrypoint:
       - /entrypoint-cron.sh
     environment:
-      APP_VERSION: v0.9.6
+      APP_VERSION: v0.9.7
       DB_DATABASE: nodeisp
       DB_USERNAME: postgres
       REDIS_PORT: "6379"
