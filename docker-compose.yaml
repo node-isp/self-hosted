@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   licence_client:
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:licence_client-v0.9.7
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:licence_client-v
     container_name: nodeisp-licence-client
     restart: unless-stopped
     environment:
@@ -32,7 +32,7 @@ services:
     labels:
       caddy: ${NODEISP_DOMAIN}
       caddy.reverse_proxy: "app:8080"
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.7
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v
     depends_on:
       - licence_client
       - postgres
@@ -63,7 +63,7 @@ services:
       - app_config:/etc/nodeisp/
 
   horizon:
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.7
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v
     depends_on:
       - app
       - licence_client
@@ -97,7 +97,7 @@ services:
       - app_config:/etc/nodeisp/
 
   cron:
-    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v0.9.7
+    image: cr.theitdept.au/node-isp/node-isp-self-hosted:portal-v
     depends_on:
       - app
       - licence_client
